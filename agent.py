@@ -21,7 +21,13 @@ class MarketingResearchAgent:
         start_time = datetime.now()
 
         for chunk in stream_research(query):
-            if chunk["type"] == "search":
+            if chunk["type"] == "gather":
+                console.print("[dim cyan]📡 Reddit·앱스토어 데이터 수집 중...[/dim cyan]", end="\r")
+            elif chunk["type"] == "gather_done":
+                console.print(" " * 40, end="\r")
+                if chunk.get("found"):
+                    console.print("[dim green]✓ 실제 외부 데이터 수집됨[/dim green]")
+            elif chunk["type"] == "search":
                 console.print("[dim cyan]🌐 웹 검색 중...[/dim cyan]", end="\r")
             elif chunk["type"] == "search_done":
                 console.print(" " * 30, end="\r")

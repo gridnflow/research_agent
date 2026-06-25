@@ -87,7 +87,12 @@ if run_btn and query.strip():
 
     with st.spinner("🌐 웹 검색 및 분석 중..."):
         for chunk in stream_research(query):
-            if chunk["type"] == "text":
+            if chunk["type"] == "gather":
+                status_placeholder.info("📡 Reddit·앱스토어 실제 데이터 수집 중...")
+            elif chunk["type"] == "gather_done":
+                if chunk.get("found"):
+                    status_placeholder.info("✓ 실제 외부 데이터 수집 완료 · 분석 중...")
+            elif chunk["type"] == "text":
                 collected.append(chunk["delta"])
                 output_placeholder.markdown("".join(collected))
 

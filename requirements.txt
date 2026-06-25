@@ -2,3 +2,6 @@ openai>=1.0.0
 python-dotenv>=1.0.0
 rich>=13.0.0
 streamlit>=1.30.0
+requests>=2.31.0
+# Optional: Google Play 데이터 수집을 켜려면 설치
+# google-play-scraper>=1.2.0

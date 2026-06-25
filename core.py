@@ -10,6 +10,8 @@ from typing import Iterator, Optional
 
 from openai import OpenAI
 
+from datasources import gather_context
+
 MODEL = "gpt-4o"
 REPORTS_DIR = Path("reports")
 
@@ -91,6 +93,7 @@ Prioritized action items with:
 - Days 61-90: Scale and optimize
 
 Always search for real, current data. Be specific and data-driven. Cite sources when possible.
+When the input includes a block of real external data (Reddit discussions, App Store / Google Play listings), treat it as primary evidence: cite specific apps, ratings, and user sentiment from it rather than relying on general knowledge.
 When the user writes in Korean, respond in Korean. When in English, respond in English."""
 
 
@@ -98,16 +101,34 @@ def stream_research(query: str, client: Optional[OpenAI] = None) -> Iterator[dic
     """리서치를 스트리밍한다.
 
     각 청크를 dict로 yield한다:
+      {"type": "gather"}            외부 데이터(Reddit/앱스토어) 수집 시작
+      {"type": "gather_done", "found": bool}  수집 종료(데이터 유무)
       {"type": "search"}            웹 검색 시작
       {"type": "search_done"}       웹 검색 종료
       {"type": "text", "delta": s}  본문 텍스트 조각
     """
     client = client or OpenAI()
+
+    # 1) Reddit·앱스토어 등에서 실제 데이터를 먼저 수집
+    yield {"type": "gather"}
+    context = gather_context(query)
+    yield {"type": "gather_done", "found": bool(context)}
+
+    # 2) 수집한 실제 데이터를 질문과 함께 입력에 주입
+    if context:
+        model_input = (
+            f"{context}\n\n"
+            f"---\n\n"
+            f"사용자 질문: {query}"
+        )
+    else:
+        model_input = query
+
     stream = client.responses.create(
         model=MODEL,
         tools=[{"type": "web_search_preview"}],
         instructions=SYSTEM_PROMPT,
-        input=query,
+        input=model_input,
         stream=True,
     )
 
