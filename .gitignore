@@ -1,0 +1,32 @@
+# ── Secrets ───────────────────────────────────────────────────
+.env
+.env.local
+*.key
+
+# ── AI 관련 문서 / 산출물 ──────────────────────────────────────
+# 에이전트가 생성한 리서치 리포트
+reports/
+*.report.md
+
+# AI 코딩 도구 컨텍스트/설정 문서
+CLAUDE.md
+GEMINI.md
+.cursorrules
+.cursor/
+.aider*
+.continue/
+.claude/
+.github/copilot-instructions.md
+
+# ── Python ────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# ── OS / Editor ───────────────────────────────────────────────
+.DS_Store
+.idea/
+.vscode/
